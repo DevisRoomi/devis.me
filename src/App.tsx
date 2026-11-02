@@ -22,7 +22,7 @@ export const App: React.FC = () => {
 
       {/* Hero Section */}
       <main className="w-full">
-        <HeroSection />
+        <HeroSection isLoading={isLoading} />
       </main>
     </div>
   );

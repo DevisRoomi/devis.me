@@ -109,13 +109,13 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] pointer-events-auto flex items-center justify-center bg-[#141517]"
+      className="fixed inset-0 z-[9999] pointer-events-auto flex items-center justify-center bg-[#0C1446]"
       style={{ height: '100vh', width: '100vw' }}
     >
       {/* Centered Greeting Words */}
       <div className="preloader-text-wrap z-10 flex items-center justify-center gap-3 text-white">
-        <span className="w-2.5 h-2.5 rounded-full bg-crimson inline-block animate-pulse" />
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-medium tracking-tight">
+        <span className="w-2.5 h-2.5 rounded-full bg-ice-blue inline-block animate-pulse shadow-[0_0_12px_#B3CDE0]" />
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-italiana font-normal tracking-wide text-white">
           {WORDS[index]}
         </h2>
       </div>
@@ -123,7 +123,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
       {/* SVG Curve for fluid exit morphing */}
       {width > 0 && (
         <svg
-          className="absolute top-0 left-0 w-full pointer-events-none fill-[#141517]"
+          className="absolute top-0 left-0 w-full pointer-events-none fill-[#0C1446]"
           style={{ height: `calc(100% + 250px)` }}
           viewBox={`0 0 ${width} ${height + 250}`}
         >
