@@ -40,17 +40,17 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
 
     const timeout = setTimeout(() => {
       setIndex((prev) => prev + 1);
-    }, index === 0 ? 320 : 180);
+    }, index === 0 ? 220 : 120);
 
     return () => clearTimeout(timeout);
   }, [index]);
 
-  // When reaching the last word ('Halo'), trigger exit animation
+  // Dennis Snellenberg signature curved slide-up reveal
   useEffect(() => {
     if (index !== WORDS.length - 1 || dimension.width === 0) return;
 
     const { width, height } = dimension;
-    const curveHeight = Math.min(250, height * 0.35);
+    const curveHeight = Math.min(220, height * 0.3);
 
     // Stretched downward curve during slide
     const targetCurvePath = `M0 0 L${width} 0 L${width} ${height} Q${width / 2} ${height + curveHeight} 0 ${height} Z`;
@@ -58,7 +58,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
     const finalFlatPath = `M0 0 L${width} 0 L${width} 0 Q${width / 2} 0 0 0 Z`;
 
     const tl = gsap.timeline({
-      delay: 0.25,
+      delay: 0.15,
       onComplete: () => {
         onLoadingComplete();
       },
@@ -67,8 +67,8 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
     // 1. Text fades out smoothly
     tl.to('.preloader-text-wrap', {
       opacity: 0,
-      y: -30,
-      duration: 0.35,
+      y: -24,
+      duration: 0.25,
       ease: 'power2.out',
     });
 
@@ -77,26 +77,30 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
       pathRef.current,
       {
         attr: { d: targetCurvePath },
-        duration: 0.45,
+        duration: 0.35,
         ease: 'power3.in',
       },
-      '-=0.1'
+      '-=0.08'
     );
 
-    tl.to(containerRef.current, {
-      y: -height - curveHeight,
-      duration: 0.85,
-      ease: 'power4.inOut',
-    }, '-=0.35');
+    tl.to(
+      containerRef.current,
+      {
+        y: -height - curveHeight,
+        duration: 0.65,
+        ease: 'power4.inOut',
+      },
+      '-=0.25'
+    );
 
     tl.to(
       pathRef.current,
       {
         attr: { d: finalFlatPath },
-        duration: 0.45,
+        duration: 0.35,
         ease: 'power3.out',
       },
-      '-=0.45'
+      '-=0.35'
     );
   }, [index, dimension, onLoadingComplete]);
 
@@ -109,13 +113,13 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] pointer-events-auto flex items-center justify-center bg-[#0C1446]"
+      className="fixed inset-0 z-[9999] pointer-events-auto flex items-center justify-center bg-[#141517]"
       style={{ height: '100vh', width: '100vw' }}
     >
       {/* Centered Greeting Words */}
       <div className="preloader-text-wrap z-10 flex items-center justify-center gap-3 text-white">
-        <span className="w-2.5 h-2.5 rounded-full bg-ice-blue inline-block animate-pulse shadow-[0_0_12px_#B3CDE0]" />
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-italiana font-normal tracking-wide text-white">
+        <span className="w-2.5 h-2.5 rounded-full bg-white inline-block animate-pulse shadow-[0_0_12px_rgba(255,255,255,0.8)]" />
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-medium tracking-wide text-white">
           {WORDS[index]}
         </h2>
       </div>
@@ -123,7 +127,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
       {/* SVG Curve for fluid exit morphing */}
       {width > 0 && (
         <svg
-          className="absolute top-0 left-0 w-full pointer-events-none fill-[#0C1446]"
+          className="absolute top-0 left-0 w-full pointer-events-none fill-[#141517]"
           style={{ height: `calc(100% + 250px)` }}
           viewBox={`0 0 ${width} ${height + 250}`}
         >
