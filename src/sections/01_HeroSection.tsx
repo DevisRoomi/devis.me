@@ -114,16 +114,12 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
       {/* 
         2. Commanding Prominent Polished Cutout Portrait
         Centered via flexbox wrapper with subtle optical offset (-translate-x-3.5) to align head/torso axis dead-center.
-        Upper body and torso remain 100% solid opaque (black 75%), fading down to 100% transparent right at bottom frame.
+        Solid 100% opaque without blur or mask fade on thighs/legs.
       */}
       <div className="absolute bottom-0 inset-x-0 flex justify-center pointer-events-none z-20">
         <div
           ref={portraitRef}
           className="relative -translate-x-3 sm:-translate-x-4 h-[72vh] sm:h-[76vh] md:h-[80vh] lg:h-[84vh] max-h-[880px] flex items-end justify-center pointer-events-none transition-transform will-change-transform"
-          style={{
-            maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
-          }}
         >
           <picture className="h-full w-auto max-w-full block">
             <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
@@ -136,15 +132,6 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
           </picture>
         </div>
       </div>
-
-      {/* Seamless Bottom Blur Layer: blends smoothly from transparent down to full blur at bottom */}
-      <div
-        className="absolute bottom-0 inset-x-0 h-52 pointer-events-none z-30 backdrop-blur-md bg-gradient-to-t from-blue-900/25 to-transparent"
-        style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 70%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 70%)',
-        }}
-      />
 
       {/* Flexible Spacer */}
       <div className="flex-1 pointer-events-none" />
