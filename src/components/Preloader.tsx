@@ -21,10 +21,15 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
   const [index, setIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
+  const [dimension, setDimension] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+  });
 
   useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
+    if (typeof window !== 'undefined') {
+      setDimension({ width: window.innerWidth, height: window.innerHeight });
+    }
 
     const handleResize = () => {
       setDimension({ width: window.innerWidth, height: window.innerHeight });
@@ -47,9 +52,10 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
 
   // Dennis Snellenberg signature curved slide-up reveal
   useEffect(() => {
-    if (index !== WORDS.length - 1 || dimension.width === 0) return;
+    if (index !== WORDS.length - 1) return;
 
-    const { width, height } = dimension;
+    const width = dimension.width || (typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const height = dimension.height || (typeof window !== 'undefined' ? window.innerHeight : 800);
     const curveHeight = Math.min(220, height * 0.3);
 
     // Stretched downward curve during slide
@@ -57,12 +63,21 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
     // Flattened top path at finish
     const finalFlatPath = `M0 0 L${width} 0 L${width} 0 Q${width / 2} 0 0 0 Z`;
 
-    const tl = gsap.timeline({
-      delay: 0.15,
-      onComplete: () => {
+    let completed = false;
+    const triggerComplete = () => {
+      if (!completed) {
+        completed = true;
         onLoadingComplete();
-      },
+      }
+    };
+
+    const tl = gsap.timeline({
+      delay: 0.1,
+      onComplete: triggerComplete,
     });
+
+    // Safety timeout in case GSAP ticker is throttled in background/headless tab
+    const safetyTimeout = setTimeout(triggerComplete, 1600);
 
     // 1. Text fades out smoothly
     tl.to('.preloader-text-wrap', {
@@ -102,6 +117,8 @@ export const Preloader: React.FC<PreloaderProps> = ({ onLoadingComplete }) => {
       },
       '-=0.35'
     );
+
+    return () => clearTimeout(safetyTimeout);
   }, [index, dimension, onLoadingComplete]);
 
   const { width, height } = dimension;

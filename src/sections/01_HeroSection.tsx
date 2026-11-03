@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Globe, ArrowUpRight, Sparkles, RefreshCw } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Globe, ArrowUpRight, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
 
 interface HeroSectionProps {
   isLoading?: boolean;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ isLoading = false }) => {
+export const HeroSection: React.FC<HeroSectionProps> = () => {
   const heroRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
-  const bioContainerRef = useRef<HTMLDivElement>(null);
-  const [scatterKey, setScatterKey] = useState(0);
 
-  // Bio text for GSAP Scatter-to-Assemble animation
+  // Bio text for editorial display
   const bioText =
     'TRPL student at IDN Polytechnic. Exploring software development, AI, and technology through continuous learning and hands-on projects.';
 
@@ -44,47 +42,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isLoading = false }) =
       ease: 'power3.out',
     });
   };
-
-  // GSAP Scatter-to-Assemble Text Animation for Bio
-  useEffect(() => {
-    if (isLoading) return;
-    if (!bioContainerRef.current) return;
-
-    const chars = bioContainerRef.current.querySelectorAll('.scatter-char');
-    if (chars.length === 0) return;
-
-    // Assemble animation using fromTo to guarantee final rendered state
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        chars,
-        {
-          x: () => gsap.utils.random(-80, 80),
-          y: () => gsap.utils.random(-40, 40),
-          rotation: () => gsap.utils.random(-25, 25),
-          scale: () => gsap.utils.random(0.6, 1.4),
-          opacity: 0,
-          filter: 'blur(6px)',
-        },
-        {
-          x: 0,
-          y: 0,
-          rotation: 0,
-          scale: 1,
-          opacity: 1,
-          filter: 'blur(0px)',
-          duration: 1.1,
-          stagger: {
-            amount: 0.65,
-            from: 'random',
-          },
-          ease: 'power3.out',
-          delay: 0.2,
-        }
-      );
-    }, bioContainerRef);
-
-    return () => ctx.revert();
-  }, [scatterKey, isLoading]);
 
   return (
     <section
@@ -156,63 +113,54 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isLoading = false }) =
 
       {/* 
         2. Commanding Prominent Polished Cutout Portrait
-        Anchored at bottom-0, scaled up to 76vh matching user doodle, with z-20 depth over marquee.
+        Centered via flexbox wrapper with subtle optical offset (-translate-x-3.5) to align head/torso axis dead-center.
+        Upper body and torso remain 100% solid opaque (black 75%), fading down to 100% transparent right at bottom frame.
       */}
-      <div
-        ref={portraitRef}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[68vh] sm:h-[72vh] md:h-[76vh] lg:h-[78vh] max-h-[820px] flex items-end justify-center pointer-events-none transition-transform will-change-transform z-20"
-      >
-        <picture className="h-full w-auto max-w-full block">
-          <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
-          <img
-            src="/assets/devis_portrait_polished.png"
-            alt="Abu Devis Jalaluddin Rumi"
-            className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_28px_50px_rgba(15,23,42,0.35)]"
-            loading="eager"
-          />
-        </picture>
+      <div className="absolute bottom-0 inset-x-0 flex justify-center pointer-events-none z-20">
+        <div
+          ref={portraitRef}
+          className="relative -translate-x-3 sm:-translate-x-4 h-[72vh] sm:h-[76vh] md:h-[80vh] lg:h-[84vh] max-h-[880px] flex items-end justify-center pointer-events-none transition-transform will-change-transform"
+          style={{
+            maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
+          }}
+        >
+          <picture className="h-full w-auto max-w-full block">
+            <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
+            <img
+              src="/assets/devis_portrait_polished.png"
+              alt="Abu Devis Jalaluddin Rumi"
+              className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_28px_50px_rgba(15,23,42,0.35)]"
+              loading="eager"
+            />
+          </picture>
+        </div>
       </div>
+
+      {/* Seamless Bottom Blur Layer: blends smoothly from transparent down to full blur at bottom */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-52 pointer-events-none z-30 backdrop-blur-md bg-gradient-to-t from-blue-900/25 to-transparent"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 70%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 70%)',
+        }}
+      />
 
       {/* Flexible Spacer */}
       <div className="flex-1 pointer-events-none" />
 
       {/* 
         Bottom Section:
-        - Left: Scatter-to-Assemble Text Animation for TRPL Student Bio
+        - Left: Clean Editorial TRPL Student Bio
         - Right: Explore Profile CTA Button
+        Clean floating layout without hard horizontal cutoff line.
       */}
-      <div className="w-full z-40 pt-3 border-t border-white/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 backdrop-blur-[3px]">
-        {/* Scatter-to-Assemble Bio Text Container */}
-        <div className="relative max-w-2xl">
-          <div
-            ref={bioContainerRef}
-            key={scatterKey}
-            className="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed select-none drop-shadow-[0_2px_8px_rgba(29,78,216,0.4)]"
-          >
-            {bioText.split(' ').map((word, wIdx) => (
-              <span key={wIdx} className="inline-block whitespace-nowrap mr-[0.32em]">
-                {word.split('').map((char, cIdx) => (
-                  <span
-                    key={cIdx}
-                    className="scatter-char inline-block will-change-transform"
-                    style={{ display: 'inline-block' }}
-                  >
-                    {char}
-                  </span>
-                ))}
-              </span>
-            ))}
-          </div>
-
-          {/* Mini Interactive Re-scatter Trigger Button */}
-          <button
-            onClick={() => setScatterKey((prev) => prev + 1)}
-            title="Re-play Scatter Animation"
-            className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-mono text-white/80 hover:text-white transition-colors duration-200 group"
-          >
-            <RefreshCw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
-            <span className="underline decoration-dotted underline-offset-4">Replay Scatter Effect</span>
-          </button>
+      <div className="w-full z-40 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Editorial Bio Text Container */}
+        <div className="relative max-w-xl">
+          <p className="text-xs sm:text-sm md:text-base text-white/95 font-medium leading-relaxed select-none drop-shadow-[0_2px_8px_rgba(29,78,216,0.4)]">
+            {bioText}
+          </p>
         </div>
 
         {/* CTA Button */}
