@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ExternalLink, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -347,38 +347,49 @@ const ProjectMockup: React.FC<{ theme: Project['previewTheme'] }> = ({ theme }) 
 
 export const WorkSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const pathRef = useRef<SVGPathElement>(null);
+  const pathRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (!pathRef.current || !sectionRef.current) return;
-
-      const path = pathRef.current;
-      const pathLength = path.getTotalLength();
-
-      // Setup initial dash properties
-      gsap.set(path, {
-        strokeDasharray: pathLength,
-        strokeDashoffset: pathLength,
-      });
-
-      // ScrollTrigger to animate stroke along scroll progress
-      gsap.to(path, {
-        strokeDashoffset: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-          end: 'bottom bottom',
-          scrub: 1.2,
-        },
-      });
+      // Light tracer animation along the vertical architectural spine
+      if (pathRef.current && sectionRef.current) {
+        gsap.fromTo(
+          pathRef.current,
+          { y: 0 },
+          {
+            y: '4000px',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: 1,
+            },
+          }
+        );
+      }
 
       // Project cards stagger fade-in
       const cards = gsap.utils.toArray<HTMLElement>('.project-card');
       cards.forEach((card) => {
-        // Fallback safety: ensure card is never stuck at opacity 0
-        gsap.set(card, { opacity: 1, y: 0 });
+        // Project watermark subtle parallax
+        const watermark = card.querySelector('.project-watermark');
+        if (watermark) {
+          gsap.fromTo(
+            watermark,
+            { y: -30 },
+            {
+              y: 30,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.5,
+              },
+            }
+          );
+        }
       });
     }, sectionRef);
 
@@ -389,88 +400,72 @@ export const WorkSection: React.FC = () => {
     <section
       id="work"
       ref={sectionRef}
-      className="relative w-full bg-[#F8F9FA] text-[#0F172A] py-28 sm:py-36 px-6 sm:px-12 md:px-16 overflow-hidden selection:bg-crimson selection:text-white"
+      className="relative w-full bg-[#EFEFED] text-[#121316] py-32 sm:py-44 px-6 sm:px-12 md:px-16 overflow-hidden selection:bg-crimson selection:text-white"
     >
-      {/* Background Architectural Blueprint Grid */}
+      {/* Editorial Grain Texture */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.4]"
+        className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-multiply z-1"
         style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px)
-          `,
-          backgroundSize: '48px 48px',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}
       />
 
+      {/* Diffuse Outer Ambient Glow */}
+      <div className="absolute top-[12%] left-[18%] w-[520px] h-[520px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[52%] right-[12%] w-[620px] h-[620px] bg-slate-400/10 rounded-full blur-[160px] pointer-events-none z-0" />
+
       {/* 
-        The Lusion Dynamic Guiding Line (Continuous SVG Spline)
-        Flows organic through the central gutter between left and right project cards,
-        weaving in whitespace and NEVER intersecting card bounding boxes.
+        The Architectural Spine (Precision Center Guideline with Radial Gradient Mask)
+        Centered exactly at x=50%, fade smoothly at top and bottom edges
       */}
-      <div className="absolute inset-0 pointer-events-none z-0 hidden md:block overflow-hidden">
-        <svg
-          viewBox="0 0 1440 4800"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
-          preserveAspectRatio="none"
+      <div className="absolute inset-0 pointer-events-none z-0 hidden md:flex justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_88%,transparent_100%)]">
+        <div 
+          className="w-[1.5px] h-full bg-gradient-to-b from-transparent via-blue-500/35 to-transparent relative"
+          style={{
+            boxShadow: '0 0 16px rgba(59, 130, 246, 0.3)',
+          }}
         >
-          <path
+          {/* Kinetic light pulse tracer traversing down the spine */}
+          <div 
             ref={pathRef}
-            d="
-              M 840 100
-              C 840 400, 840 800, 840 1200
-              C 840 1350, 600 1450, 600 1600
-              C 600 1950, 600 2150, 600 2350
-              C 600 2500, 840 2600, 840 2750
-              C 840 3100, 840 3250, 840 3450
-              C 840 3600, 600 3700, 600 3850
-              C 600 4150, 720 4400, 720 4800
-            "
-            stroke="#2563EB"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            className="opacity-45"
-            style={{
-              filter: 'drop-shadow(0 2px 10px rgba(37, 99, 235, 0.25))',
-            }}
+            className="absolute top-0 left-[-1px] w-[3.5px] h-32 bg-gradient-to-b from-transparent via-blue-400 to-transparent rounded-full opacity-80"
           />
-        </svg>
+        </div>
       </div>
 
       <div className="relative max-w-7xl mx-auto z-20">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 sm:mb-28 border-b border-slate-300 pb-10">
+        {/* Section Masthead (Dennis Snellenberg High-End Editorial) */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 sm:mb-36 border-b border-[#121316]/15 pb-12">
           <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-crimson animate-ping" />
-              <span className="font-mono text-xs tracking-widest text-slate-500 uppercase">
+            <div className="flex items-center space-x-3 mb-5">
+              <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
+              <span className="font-mono text-[11px] tracking-[0.25em] text-[#121316]/60 uppercase font-semibold">
                 [ 02 / SELECTED WORKS ]
               </span>
             </div>
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold tracking-tight text-slate-900">
-              Engineered for <br className="hidden sm:inline" />
+            <h2 className="text-5xl sm:text-7xl md:text-8xl font-serif font-black tracking-tight text-[#121316] leading-[0.95]">
+              Engineered for <br />
               <span className="italic font-normal font-serif text-blue-600">Impact & Scale</span>
             </h2>
           </div>
 
           <div className="mt-8 md:mt-0 max-w-md">
-            <p className="text-sm sm:text-base text-slate-600 font-sans leading-relaxed">
+            <p className="text-sm sm:text-base text-[#121316]/75 font-sans leading-relaxed">
               Kompilasi rekayasa perangkat lunak terpilih: kalkulator presisi F&B, platform AI komersial, gamifikasi sistem, hingga arsitektur 3D matematika berkinerja tinggi.
             </p>
-            <div className="flex items-center space-x-3 mt-4 text-xs font-mono text-slate-500">
-              <span>TOTAL 07 PROYEK</span>
+            <div className="flex items-center space-x-3 mt-5 text-[11px] font-mono text-[#121316]/50">
+              <span className="font-bold text-[#121316]">TOTAL 07 PROYEK</span>
               <span>·</span>
-              <span className="text-blue-600 font-semibold">100% PRODUCTION READY</span>
+              <span className="text-blue-600 font-bold">100% PRODUCTION READY</span>
             </div>
           </div>
         </div>
 
         {/* 
           Flagship Zig-Zag Projects (01 - 04)
+          Open Editorial Architecture (Floating Canvas Layout)
         */}
-        <div className="space-y-28 sm:space-y-40 mb-32">
+        <div className="space-y-36 sm:space-y-48 mb-40">
           {PROJECTS.slice(0, 4).map((proj, idx) => {
             const isEven = idx % 2 === 1;
 
@@ -479,95 +474,97 @@ export const WorkSection: React.FC = () => {
                 key={proj.id}
                 className={`project-card relative flex flex-col ${
                   isEven ? 'lg:flex-row-reverse' : 'lg:flex-row'
-                } items-center gap-10 lg:gap-16`}
+                } items-center gap-12 lg:gap-20`}
               >
-                {/* Ghost Backdrop Number */}
+                {/* Ghost Backdrop Number Watermark (Architectural Luxury Depth) */}
                 <div
-                  className={`absolute -top-16 sm:-top-20 ${
-                    isEven ? 'left-6 lg:left-12' : 'right-6 lg:right-12'
-                  } text-8xl sm:text-9xl md:text-[14rem] font-serif font-black text-slate-900/30 select-none pointer-events-none z-10 tracking-tighter`}
+                  className={`project-watermark absolute -top-24 sm:-top-32 ${
+                    isEven ? '-left-6 sm:-left-12' : '-right-6 sm:-right-12'
+                  } text-9xl sm:text-[14rem] md:text-[18rem] font-serif font-black text-[#121316]/[0.05] select-none pointer-events-none z-0 tracking-tighter leading-none`}
                 >
                   {proj.num}
                 </div>
 
-                {/* Project Visual / Mockup Card */}
-                <div className="w-full lg:w-3/5 group relative z-20">
-                  <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-300/80 bg-white transition-all duration-500 group-hover:shadow-[0_30px_60px_rgba(37,99,235,0.18)] group-hover:-translate-y-1.5">
+                {/* Project Visual / Editorial Architectural Device */}
+                <div className="w-full lg:w-3/5 group relative z-10 [perspective:1000px]">
+                  {/* Subtle Glow Backdrop on Canvas */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/5 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  
+                  <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-[#121316]/15 bg-[#050811] transition-all duration-700 ease-out group-hover:shadow-[0_35px_80px_rgba(37,99,235,0.22)] group-hover:-translate-y-2">
                     <ProjectMockup theme={proj.previewTheme} />
                     
                     {/* Hover Overlay Action */}
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
-                      <span className="bg-white text-slate-950 font-mono text-xs font-bold px-5 py-2.5 rounded-full shadow-lg flex items-center space-x-2 tracking-wider">
+                    <div className="absolute inset-0 bg-[#050811]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
+                      <a
+                        href={proj.liveUrl || proj.githubUrl || 'https://github.com/DevisRoomi'}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bg-white text-slate-950 font-mono text-xs font-bold px-6 py-3 rounded-full shadow-2xl flex items-center space-x-2 tracking-wider hover:scale-105 transition-transform"
+                      >
                         <span>EXPLORE REPO / ARCHITECTURE</span>
                         <ArrowUpRight className="w-4 h-4" />
-                      </span>
+                      </a>
                     </div>
                   </div>
                 </div>
 
-                {/* Project Editorial Detail */}
-                <div className="w-full lg:w-2/5 flex flex-col relative z-20 bg-white/95 lg:bg-white/90 backdrop-blur-md p-6 lg:p-7 rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                  <div className="flex items-center space-x-2.5 mb-2">
-                    <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                      PROYEK {proj.num}
+                {/* Project Open Editorial Detail (Clean Typography Directly on Canvas) */}
+                <div className="w-full lg:w-2/5 flex flex-col relative z-10">
+                  {/* Category Taxonomy & Project Index */}
+                  <div className="flex items-center space-x-3 mb-3">
+                    <span className="font-mono text-xs font-bold tracking-widest text-blue-600">
+                      {proj.num} //
                     </span>
-                    <span className="text-xs font-mono text-slate-400">/</span>
-                    <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-[#121316]/60 uppercase tracking-widest font-semibold">
                       {proj.category}
                     </span>
                   </div>
 
-                  <h3 className="text-3xl sm:text-4xl font-serif font-black text-slate-950 mb-3 tracking-tight">
+                  {/* Project Title (High-End Serif Display) */}
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#121316] mb-3 tracking-tight leading-none">
                     {proj.title}
                   </h3>
 
-                  <p className="text-sm sm:text-base font-bold text-slate-900 font-sans mb-3">
+                  {/* Editorial Tagline */}
+                  <p className="text-base sm:text-lg font-sans font-semibold text-[#121316] mb-4 leading-snug">
                     {proj.tagline}
                   </p>
 
-                  <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-sans mb-6 font-medium">
+                  {/* Deep Description */}
+                  <p className="text-sm sm:text-base text-[#121316]/80 leading-relaxed font-sans mb-7 font-normal">
                     {proj.description}
                   </p>
 
-                  {/* Monospace Tech Tag Pills */}
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  {/* Monospace Micro-Pills */}
+                  <div className="flex flex-wrap gap-2 mb-7">
                     {proj.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="font-mono text-[11px] font-bold bg-slate-900 text-slate-100 px-2.5 py-1 rounded shadow-xs"
+                        className="font-mono text-[11px] font-medium text-[#121316]/80 bg-white/70 border border-[#121316]/10 px-3 py-1 rounded-md tracking-wider uppercase shadow-xs"
                       >
-                        [ {tag} ]
+                        {tag}
                       </span>
                     ))}
                   </div>
 
-                  {/* Engineering Metric & Link */}
-                  <div className="pt-4 border-t border-slate-300 flex flex-wrap items-center justify-between gap-3">
-                    <span className="font-mono text-[11px] text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-300 font-bold shrink-0">
-                      ✓ {proj.metrics}
-                    </span>
+                  {/* Footer Metrics & Direct Action */}
+                  <div className="pt-5 border-t border-[#121316]/15 flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center space-x-2 font-mono text-xs text-[#121316]/90">
+                      <span className="w-2 h-2 rounded-full bg-blue-600" />
+                      <span className="font-semibold">{proj.metrics}</span>
+                    </div>
 
-                    {proj.liveUrl ? (
-                      <a
-                        href={proj.liveUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-blue-600 hover:text-blue-800 transition-colors shrink-0"
-                      >
-                        <span>VISIT DEMO</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    ) : (
-                      <a
-                        href={proj.githubUrl || 'https://github.com/DevisRoomi'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-slate-800 hover:text-blue-600 transition-colors shrink-0"
-                      >
-                        <span>VIEW CODE</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                    <a
+                      href={proj.liveUrl || proj.githubUrl || 'https://github.com/DevisRoomi'}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group inline-flex items-center space-x-2 text-xs font-mono font-bold text-[#121316] hover:text-blue-600 transition-colors"
+                    >
+                      <span className="tracking-wider underline underline-offset-4 decoration-[#121316]/30 group-hover:decoration-blue-600">
+                        {proj.liveUrl ? 'VISIT PRODUCTION' : 'VIEW ARCHITECTURE'}
+                      </span>
+                      <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
                   </div>
                 </div>
               </div>
@@ -577,38 +574,38 @@ export const WorkSection: React.FC = () => {
 
         {/* 
           Engineering Index (Projects 05 - 07)
-          Minimalist, Dense Editorial Table Format for Rhythm & Contrast
+          Minimalist, Dense High-End Editorial Table Format
         */}
-        <div className="border-t-2 border-slate-900 pt-16">
-          <div className="flex items-center justify-between mb-8">
+        <div className="border-t-2 border-[#121316] pt-20">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12">
             <div>
-              <span className="font-mono text-xs text-slate-500 uppercase tracking-widest block mb-1">
+              <span className="font-mono text-xs text-[#121316]/60 uppercase tracking-widest block mb-2 font-semibold">
                 [ 05 — 07 // EXTENDED REPERTOIRE ]
               </span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
+              <h3 className="text-3xl sm:text-4xl font-serif font-black text-[#121316]">
                 Architecture & Systems Index
               </h3>
             </div>
-            <span className="font-mono text-xs text-slate-500 hidden sm:inline">
-              SORTED BY RELEVANCE
+            <span className="font-mono text-xs text-[#121316]/50 mt-2 sm:mt-0">
+              HIGH-THROUGHPUT & CREATIVE CODE
             </span>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#121316]/10">
             {PROJECTS.slice(4).map((proj) => (
               <div
                 key={proj.id}
-                className="group py-6 sm:py-8 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white hover:px-4 rounded-xl transition-all duration-300"
+                className="group py-7 sm:py-9 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-[#121316]/[0.03] px-2 sm:px-4 rounded-xl transition-all duration-300"
               >
-                <div className="flex items-baseline space-x-4">
+                <div className="flex items-baseline space-x-5">
                   <span className="font-mono text-sm font-bold text-blue-600">
                     {proj.num}
                   </span>
                   <div>
-                    <h4 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                    <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#121316] group-hover:text-blue-600 transition-colors">
                       {proj.title}
                     </h4>
-                    <span className="text-xs font-mono text-slate-500 block mt-0.5">
+                    <span className="text-xs font-mono text-[#121316]/60 block mt-1">
                       {proj.tagline}
                     </span>
                   </div>
@@ -618,22 +615,22 @@ export const WorkSection: React.FC = () => {
                   {proj.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
+                      className="text-[10px] font-mono text-[#121316]/65 bg-[#121316]/[0.04] border border-[#121316]/10 px-2 py-0.5 rounded"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                <div className="flex items-center space-x-4 justify-between md:justify-end">
-                  <span className="text-xs font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                <div className="flex items-center space-x-6 justify-between md:justify-end">
+                  <span className="text-xs font-mono text-[#121316]/75">
                     {proj.metrics}
                   </span>
                   <a
                     href={proj.githubUrl || 'https://github.com/DevisRoomi'}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors shadow-sm"
+                    className="w-10 h-10 rounded-full bg-[#121316] text-white flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shadow-md group-hover:scale-110"
                     aria-label={`View ${proj.title}`}
                   >
                     <ArrowUpRight className="w-4 h-4" />
