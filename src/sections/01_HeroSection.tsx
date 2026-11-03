@@ -131,54 +131,50 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isLoading = false }) =
       </div>
 
       {/* 
-        Center Stage:
-        Dennis Snellenberg Signature Layout:
-        - Layer 1 (z-10): Continuous Rolling Sideways Marquee Name
-        - Layer 2 (z-20): Proportional Polished Cutout Portrait in Front
+        1. Continuous Rolling Sideways Marquee (Dennis Snellenberg Signature)
+        Spans 100% of viewport edge-to-edge (w-screen) so text never cuts off before screen border.
+        Placed at z-10 behind the large portrait.
       */}
-      <div className="relative flex-1 flex items-end justify-center w-full max-w-7xl mx-auto overflow-visible my-0">
-        {/* 
-          1. Continuous Rolling Sideways Marquee (Dennis Snellenberg Signature)
-          Runs behind the subject, creating iconic depth and luxury editorial motion
-        */}
-        <div className="absolute bottom-[4%] sm:bottom-[6%] md:bottom-[8%] left-0 w-full overflow-hidden select-none pointer-events-none z-10">
-          <div className="flex w-max animate-marquee whitespace-nowrap">
-            {/* Track 1 */}
-            <div className="flex items-center text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10.5rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_28px_rgba(29,78,216,0.35)] leading-none pr-12">
-              <span>Abu Devis Jalaluddin Rumi</span>
-              <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-              <span>Abu Devis Jalaluddin Rumi</span>
-              <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-            </div>
-            {/* Track 2 for infinite loop */}
-            <div className="flex items-center text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10.5rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_28px_rgba(29,78,216,0.35)] leading-none pr-12">
-              <span>Abu Devis Jalaluddin Rumi</span>
-              <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-              <span>Abu Devis Jalaluddin Rumi</span>
-              <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-            </div>
+      <div className="absolute bottom-[20%] sm:bottom-[22%] md:bottom-[24%] left-0 w-full overflow-hidden select-none pointer-events-none z-10">
+        <div className="flex w-max animate-marquee whitespace-nowrap">
+          {/* Track 1 */}
+          <div className="flex items-center text-7xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_32px_rgba(29,78,216,0.35)] leading-none pr-12">
+            <span>Abu Devis Jalaluddin Rumi</span>
+            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
+            <span>Abu Devis Jalaluddin Rumi</span>
+            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
+          </div>
+          {/* Track 2 for seamless infinite loop */}
+          <div className="flex items-center text-7xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_32px_rgba(29,78,216,0.35)] leading-none pr-12">
+            <span>Abu Devis Jalaluddin Rumi</span>
+            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
+            <span>Abu Devis Jalaluddin Rumi</span>
+            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
           </div>
         </div>
-
-        {/* 
-          2. Proportional Polished Cutout Portrait (Centered, grounded at bottom in front of text)
-          Clean natural waist-up framing, high resolution, soft contact shadow
-        */}
-        <div
-          ref={portraitRef}
-          className="relative h-[48vh] sm:h-[52vh] md:h-[55vh] max-h-[540px] flex items-end justify-center pointer-events-none transition-transform will-change-transform z-20"
-        >
-          <picture className="h-full w-auto max-w-full block">
-            <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
-            <img
-              src="/assets/devis_portrait_polished.png"
-              alt="Abu Devis Jalaluddin Rumi"
-              className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_24px_45px_rgba(15,23,42,0.32)]"
-              loading="eager"
-            />
-          </picture>
-        </div>
       </div>
+
+      {/* 
+        2. Commanding Prominent Polished Cutout Portrait
+        Anchored at bottom-0, scaled up to 76vh matching user doodle, with z-20 depth over marquee.
+      */}
+      <div
+        ref={portraitRef}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[68vh] sm:h-[72vh] md:h-[76vh] lg:h-[78vh] max-h-[820px] flex items-end justify-center pointer-events-none transition-transform will-change-transform z-20"
+      >
+        <picture className="h-full w-auto max-w-full block">
+          <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
+          <img
+            src="/assets/devis_portrait_polished.png"
+            alt="Abu Devis Jalaluddin Rumi"
+            className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_28px_50px_rgba(15,23,42,0.35)]"
+            loading="eager"
+          />
+        </picture>
+      </div>
+
+      {/* Flexible Spacer */}
+      <div className="flex-1 pointer-events-none" />
 
       {/* 
         Bottom Section:
