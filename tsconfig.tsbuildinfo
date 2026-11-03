@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/header.tsx","./src/components/preloader.tsx","./src/hooks/uselenis.ts","./src/sections/01_herosection.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/header.tsx","./src/components/preloader.tsx","./src/hooks/uselenis.ts","./src/sections/01_herosection.tsx","./src/sections/02_worksection.tsx"],"version":"5.9.3"}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Preloader } from './components/Preloader';
 import { Header } from './components/Header';
 import { HeroSection } from './sections/01_HeroSection';
+import { WorkSection } from './sections/02_WorkSection';
 import { useLenis } from './hooks/useLenis';
 
 export const App: React.FC = () => {
@@ -23,6 +24,7 @@ export const App: React.FC = () => {
       {/* Hero Section */}
       <main className="w-full">
         <HeroSection isLoading={isLoading} />
+        <WorkSection />
       </main>
     </div>
   );
