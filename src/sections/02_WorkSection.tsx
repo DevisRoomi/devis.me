@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
@@ -348,6 +348,19 @@ const ProjectMockup: React.FC<{ theme: Project['previewTheme'] }> = ({ theme }) 
 export const WorkSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const pathRef = useRef<HTMLDivElement>(null);
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState({ x: -200, y: -200 });
+  const [lensVisible, setLensVisible] = useState(false);
+
+  // Smooth mouse coordinates tracking for floating magnetic lens
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('pointermove', handleMove, { passive: true });
+    return () => window.removeEventListener('pointermove', handleMove);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -400,7 +413,7 @@ export const WorkSection: React.FC = () => {
     <section
       id="work"
       ref={sectionRef}
-      className="relative w-full bg-[#EFEFED] text-[#121316] py-32 sm:py-44 px-6 sm:px-12 md:px-16 overflow-hidden selection:bg-crimson selection:text-white"
+      className="relative w-full bg-[#EFEFED] text-[#121316] pt-24 sm:pt-32 pb-32 sm:pb-44 px-6 sm:px-12 md:px-16 overflow-hidden selection:bg-crimson selection:text-white"
     >
       {/* Editorial Grain Texture */}
       <div
@@ -418,9 +431,9 @@ export const WorkSection: React.FC = () => {
         The Architectural Spine (Precision Center Guideline with Radial Gradient Mask)
         Centered exactly at x=50%, fade smoothly at top and bottom edges
       */}
-      <div className="absolute inset-0 pointer-events-none z-0 hidden md:flex justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_88%,transparent_100%)]">
+      <div className="absolute inset-0 pointer-events-none z-0 hidden md:flex justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,transparent_15%,black_22%,black_88%,transparent_100%)]">
         <div 
-          className="w-[1.5px] h-full bg-gradient-to-b from-transparent via-blue-500/35 to-transparent relative"
+          className="w-[1.5px] h-full bg-gradient-to-b from-blue-500/80 via-blue-500/35 to-transparent relative"
           style={{
             boxShadow: '0 0 16px rgba(59, 130, 246, 0.3)',
           }}
@@ -433,12 +446,27 @@ export const WorkSection: React.FC = () => {
         </div>
       </div>
 
+      {/* Floating Magnetic Interaction Cursor Lens (Awwwards Creative Interaction) */}
+      <div
+        className={`fixed top-0 left-0 pointer-events-none z-50 transition-opacity duration-300 ease-out hidden lg:block ${
+          lensVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0) translate(-50%, -50%)`,
+        }}
+      >
+        <div className="w-24 h-24 rounded-full bg-blue-600/90 text-white backdrop-blur-md flex flex-col items-center justify-center shadow-[0_10px_35px_rgba(37,99,235,0.45)] border border-white/20 scale-100 transition-transform duration-200">
+          <span className="font-mono text-[9px] font-bold tracking-widest uppercase">DISCOVER</span>
+          <ArrowUpRight className="w-4 h-4 mt-0.5" />
+        </div>
+      </div>
+
       <div className="relative max-w-7xl mx-auto z-20">
         {/* Section Masthead (Dennis Snellenberg High-End Editorial) */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 sm:mb-36 border-b border-[#121316]/15 pb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-32 sm:mb-44 border-b border-[#121316]/10 pb-16 sm:pb-20">
           <div>
             <div className="flex items-center space-x-3 mb-5">
-              <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block shadow-[0_0_10px_rgba(37,99,235,0.6)]" />
               <span className="font-mono text-[11px] tracking-[0.25em] text-[#121316]/60 uppercase font-semibold">
                 [ 02 / SELECTED WORKS ]
               </span>
@@ -463,43 +491,71 @@ export const WorkSection: React.FC = () => {
 
         {/* 
           Flagship Zig-Zag Projects (01 - 04)
-          Open Editorial Architecture (Floating Canvas Layout)
+          Open Editorial Architecture (Floating Canvas Layout with Interactive Hover Focus)
         */}
         <div className="space-y-36 sm:space-y-48 mb-40">
           {PROJECTS.slice(0, 4).map((proj, idx) => {
             const isEven = idx % 2 === 1;
+            const isHovered = hoveredProjectId === proj.id;
+            const isAnyHovered = hoveredProjectId !== null;
 
             return (
               <div
                 key={proj.id}
+                onMouseEnter={() => {
+                  setHoveredProjectId(proj.id);
+                  setLensVisible(true);
+                }}
+                onMouseLeave={() => {
+                  setHoveredProjectId(null);
+                  setLensVisible(false);
+                }}
                 className={`project-card relative flex flex-col ${
                   isEven ? 'lg:flex-row-reverse' : 'lg:flex-row'
-                } items-center gap-12 lg:gap-20`}
+                } items-center gap-12 lg:gap-20 transition-all duration-700 ${
+                  isAnyHovered && !isHovered ? 'opacity-35 filter blur-[0.8px] scale-[0.98]' : 'opacity-100 scale-100'
+                }`}
               >
                 {/* Ghost Backdrop Number Watermark (Architectural Luxury Depth) */}
                 <div
                   className={`project-watermark absolute -top-24 sm:-top-32 ${
                     isEven ? '-left-6 sm:-left-12' : '-right-6 sm:-right-12'
-                  } text-9xl sm:text-[14rem] md:text-[18rem] font-serif font-black text-[#121316]/[0.05] select-none pointer-events-none z-0 tracking-tighter leading-none`}
+                  } text-9xl sm:text-[14rem] md:text-[18rem] font-serif font-black select-none pointer-events-none z-0 tracking-tighter leading-none transition-colors duration-500 ${
+                    isHovered ? 'text-blue-600/[0.08]' : 'text-[#121316]/[0.05]'
+                  }`}
                 >
                   {proj.num}
                 </div>
 
                 {/* Project Visual / Editorial Architectural Device */}
                 <div className="w-full lg:w-3/5 group relative z-10 [perspective:1000px]">
-                  {/* Subtle Glow Backdrop on Canvas */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/5 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  {/* Dynamic Glow Spotlight Backdrop */}
+                  <div
+                    className={`absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-cyan-500/10 rounded-3xl blur-2xl transition-opacity duration-700 pointer-events-none ${
+                      isHovered ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
                   
-                  <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-[#121316]/15 bg-[#050811] transition-all duration-700 ease-out group-hover:shadow-[0_35px_80px_rgba(37,99,235,0.22)] group-hover:-translate-y-2">
+                  <div
+                    className={`relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden border bg-[#050811] transition-all duration-700 ease-out ${
+                      isHovered
+                        ? 'shadow-[0_45px_90px_rgba(37,99,235,0.28)] border-blue-500/40 -translate-y-2.5 scale-[1.01]'
+                        : 'shadow-[0_20px_50px_rgba(0,0,0,0.18)] border-[#121316]/15 translate-y-0 scale-100'
+                    }`}
+                  >
                     <ProjectMockup theme={proj.previewTheme} />
                     
-                    {/* Hover Overlay Action */}
-                    <div className="absolute inset-0 bg-[#050811]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
+                    {/* Hover Direct Link Overlay */}
+                    <div
+                      className={`absolute inset-0 bg-[#050811]/40 flex items-center justify-center backdrop-blur-xs transition-opacity duration-300 ${
+                        isHovered ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
                       <a
                         href={proj.liveUrl || proj.githubUrl || 'https://github.com/DevisRoomi'}
                         target="_blank"
                         rel="noreferrer"
-                        className="bg-white text-slate-950 font-mono text-xs font-bold px-6 py-3 rounded-full shadow-2xl flex items-center space-x-2 tracking-wider hover:scale-105 transition-transform"
+                        className="bg-white text-slate-950 font-mono text-xs font-bold px-6 py-3 rounded-full shadow-2xl flex items-center space-x-2 tracking-wider hover:scale-105 transition-transform pointer-events-auto"
                       >
                         <span>EXPLORE REPO / ARCHITECTURE</span>
                         <ArrowUpRight className="w-4 h-4" />
@@ -520,10 +576,17 @@ export const WorkSection: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Project Title (High-End Serif Display) */}
-                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#121316] mb-3 tracking-tight leading-none">
-                    {proj.title}
-                  </h3>
+                  {/* Project Title (High-End Serif Display with Interactive Arrow) */}
+                  <div className="flex items-baseline space-x-4 mb-3">
+                    <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#121316] tracking-tight leading-none group-hover:text-blue-600 transition-colors duration-300">
+                      {proj.title}
+                    </h3>
+                    <ArrowUpRight
+                      className={`w-6 h-6 text-blue-600 transition-all duration-300 ${
+                        isHovered ? 'opacity-100 translate-x-1 -translate-y-1' : 'opacity-0 translate-x-0 translate-y-0'
+                      }`}
+                    />
+                  </div>
 
                   {/* Editorial Tagline */}
                   <p className="text-base sm:text-lg font-sans font-semibold text-[#121316] mb-4 leading-snug">

@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
         - Right: Explore Profile CTA Button
         Clean floating layout without hard horizontal cutoff line.
       */}
-      <div className="w-full z-40 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="w-full z-40 pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         {/* Editorial Bio Text Container */}
         <div className="relative max-w-xl">
           <p className="text-xs sm:text-sm md:text-base text-white/95 font-medium leading-relaxed select-none drop-shadow-[0_2px_8px_rgba(29,78,216,0.4)]">
@@ -153,7 +153,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
         {/* CTA Button */}
         <div className="flex items-center gap-3">
           <a
-            href="#about"
+            href="#work"
             className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white hover:bg-white/90 text-blue-900 text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_20px_rgba(29,78,216,0.25)] hover:shadow-[0_6px_25px_rgba(29,78,216,0.35)] hover:scale-105 group pointer-events-auto"
           >
             <span>Explore Engineering Profile</span>
