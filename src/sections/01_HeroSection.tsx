@@ -1,52 +1,68 @@
-import React, { useRef, useState } from 'react';
-import { Globe, ArrowUpRight, Sparkles, Compass } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface HeroSectionProps {
   isLoading?: boolean;
 }
 
-interface FloatingRune {
-  id: string;
-  label: string;
-  x: number;
-  y: number;
-  origX: number;
-  origY: number;
-}
-
 export const HeroSection: React.FC<HeroSectionProps> = () => {
   const heroRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
-  const locationPillRef = useRef<HTMLDivElement>(null);
-  const rolePillRef = useRef<HTMLDivElement>(null);
-  const ctaBtnRef = useRef<HTMLAnchorElement>(null);
-  const bioRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const singleSpanRef = useRef<HTMLSpanElement>(null);
 
-  // Live telemetry coordinates
-  const [coords, setCoords] = useState({ x: 0, y: 0, speed: 0 });
-  const [hudActive, setHudActive] = useState(false);
-  const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
+  // Marquee velocity state
+  const offsetRef = useRef<number>(0);
+  const currentSpeedRef = useRef<number>(-1.6); // default leftward drift
+  const targetSpeedRef = useRef<number>(-1.6);
+  const lastMouseXRef = useRef<number>(0);
+  const isHoveredOnTextRef = useRef<boolean>(false);
 
-  // Absurd floating engineering tokens (Repelling physics nodes)
-  const [runes, setRunes] = useState<FloatingRune[]>([
-    { id: 'r1', label: 'TRPL.ARCH', x: 14, y: 22, origX: 14, origY: 22 },
-    { id: 'r2', label: 'IDN.260558302012', x: 82, y: 18, origX: 82, origY: 18 },
-    { id: 'r3', label: 'LAT:06°35′S', x: 8, y: 56, origX: 8, origY: 56 },
-    { id: 'r4', label: 'LON:106°47′E', x: 89, y: 54, origX: 89, origY: 54 },
-    { id: 'r5', label: 'SYS:60FPS', x: 18, y: 82, origX: 18, origY: 82 },
-    { id: 'r6', label: 'TS.STRICT', x: 76, y: 80, origX: 76, origY: 80 },
-    { id: 'r7', label: 'BUN.ENGINE', x: 26, y: 32, origX: 26, origY: 32 },
-    { id: 'r8', label: 'GSAP.KINETIC', x: 73, y: 34, origX: 73, origY: 34 },
-  ]);
+  // Check prefers-reduced-motion
+  const prefersReducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false;
 
-  // Bio text for editorial display
-  const bioText =
-    'TRPL student at IDN Polytechnic. Exploring software development, AI, and technology through continuous learning and hands-on projects.';
+  // Kinetic Interactive Marquee Animation Loop
+  useEffect(() => {
+    if (prefersReducedMotion) return;
 
-  // Parallax tilt on mouse move + kinetic calculations
+    let animId: number;
+
+    const tick = () => {
+      if (trackRef.current && singleSpanRef.current) {
+        const singleWidth = singleSpanRef.current.offsetWidth || 1200;
+
+        // Smooth acceleration / deceleration toward targetSpeed
+        currentSpeedRef.current +=
+          (targetSpeedRef.current - currentSpeedRef.current) * 0.08;
+
+        offsetRef.current += currentSpeedRef.current;
+
+        // Seamless infinite loop wrapping in both directions
+        if (offsetRef.current <= -singleWidth) {
+          offsetRef.current += singleWidth;
+        } else if (offsetRef.current >= 0) {
+          offsetRef.current -= singleWidth;
+        }
+
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [prefersReducedMotion]);
+
+  // Mouse Move Interaction: Parallax on portrait + dynamic marquee steering
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (!heroRef.current) return;
+    if (prefersReducedMotion || !heroRef.current) return;
+
     const rect = heroRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -54,132 +70,35 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
     const normX = (mouseX - rect.width / 2) / (rect.width / 2);
     const normY = (mouseY - rect.height / 2) / (rect.height / 2);
 
-    // Calculate mouse speed for HUD
-    const now = Date.now();
-    const dt = Math.max(1, now - lastMousePos.current.time);
-    const dist = Math.hypot(mouseX - lastMousePos.current.x, mouseY - lastMousePos.current.y);
-    const speed = Math.round((dist / dt) * 100);
-    lastMousePos.current = { x: mouseX, y: mouseY, time: now };
-
-    setCoords({ x: Math.round(mouseX), y: Math.round(mouseY), speed });
-    setHudActive(true);
-
-    // 1. Portrait 3D Parallax Tilt (Strictly maintained)
+    // 1. Subtle 3D portrait parallax
     if (portraitRef.current) {
       gsap.to(portraitRef.current, {
-        x: normX * 18,
-        y: normY * 12,
-        rotateY: normX * 3.5,
-        rotateX: -normY * 2.5,
+        x: normX * 14,
+        y: normY * 8,
+        rotateY: normX * 3,
+        rotateX: -normY * 2,
         duration: 0.8,
         ease: 'power2.out',
+        overwrite: 'auto',
       });
     }
 
-    // 2. Absurd Repulsion Physics for Floating Engineering Runes
-    setRunes((prev) =>
-      prev.map((rune) => {
-        const runePxX = (rune.origX / 100) * rect.width;
-        const runePxY = (rune.origY / 100) * rect.height;
-        const dx = mouseX - runePxX;
-        const dy = mouseY - runePxY;
-        const distance = Math.hypot(dx, dy);
+    // 2. Dynamic marquee steering based on mouse velocity
+    const deltaX = e.clientX - lastMouseXRef.current;
+    lastMouseXRef.current = e.clientX;
 
-        // Repel threshold 140px: run away from cursor
-        if (distance < 140 && distance > 0) {
-          const force = (1 - distance / 140) * 40;
-          const pushX = -(dx / distance) * force;
-          const pushY = -(dy / distance) * force;
-          return {
-            ...rune,
-            x: rune.origX + (pushX / rect.width) * 100,
-            y: rune.origY + (pushY / rect.height) * 100,
-          };
-        } else {
-          // Smooth spring return to original coordinates
-          return {
-            ...rune,
-            x: rune.x + (rune.origX - rune.x) * 0.12,
-            y: rune.y + (rune.origY - rune.y) * 0.12,
-          };
-        }
-      })
-    );
-
-    // 3. Magnetic pull on Location Pill
-    if (locationPillRef.current) {
-      const pillRect = locationPillRef.current.getBoundingClientRect();
-      const pCenterX = pillRect.left + pillRect.width / 2;
-      const pCenterY = pillRect.top + pillRect.height / 2;
-      const pDist = Math.hypot(e.clientX - pCenterX, e.clientY - pCenterY);
-
-      if (pDist < 120) {
-        const pull = (1 - pDist / 120) * 16;
-        gsap.to(locationPillRef.current, {
-          x: ((e.clientX - pCenterX) / 120) * pull,
-          y: ((e.clientY - pCenterY) / 120) * pull,
-          duration: 0.3,
-          ease: 'power2.out',
-        });
+    if (isHoveredOnTextRef.current) {
+      if (Math.abs(deltaX) > 1) {
+        targetSpeedRef.current = deltaX > 0 ? 1.8 : -2.4;
       } else {
-        gsap.to(locationPillRef.current, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+        targetSpeedRef.current = -0.3; // dramatically slowed down crawl
       }
-    }
-
-    // 4. Magnetic pull on Role Pill
-    if (rolePillRef.current) {
-      const pillRect = rolePillRef.current.getBoundingClientRect();
-      const pCenterX = pillRect.left + pillRect.width / 2;
-      const pCenterY = pillRect.top + pillRect.height / 2;
-      const pDist = Math.hypot(e.clientX - pCenterX, e.clientY - pCenterY);
-
-      if (pDist < 120) {
-        const pull = (1 - pDist / 120) * 16;
-        gsap.to(rolePillRef.current, {
-          x: ((e.clientX - pCenterX) / 120) * pull,
-          y: ((e.clientY - pCenterY) / 120) * pull,
-          duration: 0.3,
-          ease: 'power2.out',
-        });
-      } else {
-        gsap.to(rolePillRef.current, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
-      }
-    }
-
-    // 5. Magnetic pull on CTA Button
-    if (ctaBtnRef.current) {
-      const btnRect = ctaBtnRef.current.getBoundingClientRect();
-      const bCenterX = btnRect.left + btnRect.width / 2;
-      const bCenterY = btnRect.top + btnRect.height / 2;
-      const bDist = Math.hypot(e.clientX - bCenterX, e.clientY - bCenterY);
-
-      if (bDist < 160) {
-        const pull = (1 - bDist / 160) * 22;
-        gsap.to(ctaBtnRef.current, {
-          x: ((e.clientX - bCenterX) / 160) * pull,
-          y: ((e.clientY - bCenterY) / 160) * pull,
-          scale: 1.06,
-          duration: 0.3,
-          ease: 'power2.out',
-        });
-      } else {
-        gsap.to(ctaBtnRef.current, { x: 0, y: 0, scale: 1, duration: 0.7, ease: 'elastic.out(1.1, 0.35)' });
-      }
-    }
-
-    // 6. Bio Text subtle 3D tilt
-    if (bioRef.current) {
-      gsap.to(bioRef.current, {
-        rotateX: -normY * 4,
-        rotateY: normX * 6,
-        duration: 0.5,
-        ease: 'power2.out',
-      });
     }
   };
 
   const handleMouseLeave = () => {
-    setHudActive(false);
+    if (prefersReducedMotion) return;
+
     if (portraitRef.current) {
       gsap.to(portraitRef.current, {
         x: 0,
@@ -188,13 +107,64 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
         rotateX: 0,
         duration: 1.2,
         ease: 'power3.out',
+        overwrite: 'auto',
       });
     }
-    if (locationPillRef.current) gsap.to(locationPillRef.current, { x: 0, y: 0, duration: 0.6 });
-    if (rolePillRef.current) gsap.to(rolePillRef.current, { x: 0, y: 0, duration: 0.6 });
-    if (ctaBtnRef.current) gsap.to(ctaBtnRef.current, { x: 0, y: 0, scale: 1, duration: 0.6 });
-    if (bioRef.current) gsap.to(bioRef.current, { rotateX: 0, rotateY: 0, duration: 0.6 });
+
+    isHoveredOnTextRef.current = false;
+    targetSpeedRef.current = -1.6; // return to normal flow
   };
+
+  // Text hover triggers
+  const handleTextMouseEnter = () => {
+    isHoveredOnTextRef.current = true;
+    targetSpeedRef.current = -0.3;
+  };
+
+  const handleTextMouseLeave = () => {
+    isHoveredOnTextRef.current = false;
+    targetSpeedRef.current = -1.6;
+  };
+
+  // Stacking Sections with Scale-Down Parallax (Scrubbed smoothly via GSAP ScrollTrigger)
+  useEffect(() => {
+    if (prefersReducedMotion || !heroRef.current) return;
+
+    // Ensure pristine full-bleed initial state: scale 1, full brightness, 0 border radius
+    gsap.set(heroRef.current, {
+      scale: 1,
+      filter: 'brightness(1)',
+      borderRadius: '0px',
+      transformOrigin: 'center top',
+    });
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        heroRef.current,
+        {
+          scale: 1,
+          filter: 'brightness(1)',
+          borderRadius: '0px',
+        },
+        {
+          scale: 0.92,
+          filter: 'brightness(0.65)',
+          borderRadius: '28px',
+          transformOrigin: 'center top',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
 
   return (
     <section
@@ -202,181 +172,107 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
       ref={heroRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative h-screen max-h-screen w-full flex flex-col justify-between pt-16 sm:pt-20 pb-4 sm:pb-5 px-6 sm:px-12 overflow-hidden select-none"
+      className="sticky top-0 z-10 h-screen max-h-screen w-full flex flex-col justify-between pt-24 pb-8 px-6 sm:px-12 md:px-16 overflow-hidden select-none origin-top will-change-transform"
       style={{
         background:
-          'radial-gradient(ellipse at 50% 28%, #BAE6FD 0%, #7DD3FC 24%, #38BDF8 52%, #2563EB 82%, #1D4ED8 100%)',
+          'radial-gradient(ellipse at 50% 44%, #7DD3FC 0%, #38BDF8 26%, #2563EB 58%, #1D4ED8 80%, #1538A6 100%)',
       }}
     >
-      {/* Editorial Ambient Luminous Layer: Soft white halo & sky dispersion */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Soft White Center Corona behind subject */}
-        <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[480px] bg-white/40 rounded-full blur-[100px]" />
-        <div className="absolute -top-16 -left-16 w-[450px] h-[450px] bg-sky-200/50 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-20 -right-20 w-[600px] h-[600px] bg-blue-600/35 rounded-full blur-[130px]" />
+      {/* 1. Subtle Organic Film Grain Overlay */}
+      <div className="film-grain-overlay" />
 
-        {/* Minimal High-End Editorial Blueprint Grid Accent */}
+      {/* 2. Solusi 2: Balanced Ambient Lighting (Tidak bocor ke area navbar) */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Soft volumetric halo centered behind torso & shoulders */}
+        <div className="absolute top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[520px] bg-white/30 rounded-full blur-[130px]" />
+        <div className="absolute -top-24 -left-24 w-[420px] h-[420px] bg-blue-700/30 rounded-full blur-[130px]" />
+        <div className="absolute -bottom-28 -right-28 w-[640px] h-[640px] bg-blue-900/40 rounded-full blur-[140px]" />
+
+        {/* Blueprint hairline grid */}
         <div
           className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{
-            backgroundImage: 'linear-gradient(#1D4ED8 1px, transparent 1px), linear-gradient(90deg, #1D4ED8 1px, transparent 1px)',
+            backgroundImage:
+              'linear-gradient(#1D4ED8 1px, transparent 1px), linear-gradient(90deg, #1D4ED8 1px, transparent 1px)',
             backgroundSize: '80px 80px',
           }}
         />
-
-        {/* Absurd Interactive HUD Crosshairs following cursor */}
-        {hudActive && (
-          <div className="absolute inset-0 pointer-events-none z-5 transition-opacity duration-300">
-            {/* Horizontal guide hair */}
-            <div
-              className="absolute left-0 right-0 h-[1px] bg-sky-300/20 backdrop-blur-xs"
-              style={{ top: `${coords.y}px` }}
-            />
-            {/* Vertical guide hair */}
-            <div
-              className="absolute top-0 bottom-0 w-[1px] bg-sky-300/20 backdrop-blur-xs"
-              style={{ left: `${coords.x}px` }}
-            />
-            {/* Circular HUD radar target */}
-            <div
-              className="absolute w-12 h-12 rounded-full border border-sky-300/40 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center animate-ping pointer-events-none"
-              style={{
-                left: `${coords.x}px`,
-                top: `${coords.y}px`,
-                animationDuration: '3s',
-              }}
-            />
-          </div>
-        )}
-
-        {/* Absurd Floating Engineering Runes (Repelled by Mouse) */}
-        {runes.map((rune) => (
-          <div
-            key={rune.id}
-            className="absolute z-10 pointer-events-none font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-white/50 bg-blue-950/25 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-xs shadow-xs transition-transform duration-100 ease-out hidden sm:block"
-            style={{
-              left: `${rune.x}%`,
-              top: `${rune.y}%`,
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            {rune.label}
-          </div>
-        ))}
       </div>
 
-      {/* Top Meta Bar */}
-      <div className="w-full flex items-center justify-between gap-4 z-40">
-        {/* Location Status Pill (Dennis Snellenberg Style with Magnetic GSAP Spring) */}
+      {/* Spacer to push content naturally */}
+      <div className="w-full flex-1" />
+
+      {/* 
+        3. Sandwich Layer 1 (Back): Tall, Condensed Editorial Marquee (Level Bahu & Leher)
+        Ref: Drama Owns aesthetic.
+      */}
+      <div
+        onMouseEnter={handleTextMouseEnter}
+        onMouseLeave={handleTextMouseLeave}
+        className="absolute bottom-[28%] sm:bottom-[30%] md:bottom-[32%] lg:bottom-[34%] left-0 w-full overflow-hidden select-none z-10 cursor-pointer py-4"
+      >
         <div
-          ref={locationPillRef}
-          className="group inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/85 hover:bg-white text-slate-900 border border-white/70 shadow-[0_4px_20px_rgba(29,78,216,0.15)] backdrop-blur-md text-xs sm:text-sm font-medium transition-colors duration-300 cursor-pointer will-change-transform"
+          ref={trackRef}
+          className="flex whitespace-nowrap will-change-transform"
+          style={{ transform: 'translate3d(0, 0, 0)' }}
         >
-          <Globe className="w-4 h-4 text-blue-600 group-hover:rotate-180 transition-transform duration-700 ease-spring" />
-          <span>Located in Bogor, Indonesia</span>
-          <span className="text-[10px] font-mono text-blue-700/60 hidden md:inline ml-1">
-            [06°35′S]
+          {/* Loop Segment 1 */}
+          <span
+            ref={singleSpanRef}
+            className="flex items-center text-[18vw] sm:text-[17vw] md:text-[15vw] lg:text-[14vw] font-bebas font-normal tracking-wide text-white drop-shadow-[0_16px_40px_rgba(29,78,216,0.3)] leading-none shrink-0 pr-8 sm:pr-14"
+          >
+            ABU DEVIS JALALUDDIN RUMI <span className="mx-6 sm:mx-10 text-sky-200/70 font-light">—</span>
+          </span>
+
+          {/* Loop Segment 2 */}
+          <span className="flex items-center text-[18vw] sm:text-[17vw] md:text-[15vw] lg:text-[14vw] font-bebas font-normal tracking-wide text-white drop-shadow-[0_16px_40px_rgba(29,78,216,0.3)] leading-none shrink-0 pr-8 sm:pr-14">
+            ABU DEVIS JALALUDDIN RUMI <span className="mx-6 sm:mx-10 text-sky-200/70 font-light">—</span>
+          </span>
+
+          {/* Loop Segment 3 */}
+          <span className="flex items-center text-[18vw] sm:text-[17vw] md:text-[15vw] lg:text-[14vw] font-bebas font-normal tracking-wide text-white drop-shadow-[0_16px_40px_rgba(29,78,216,0.3)] leading-none shrink-0 pr-8 sm:pr-14">
+            ABU DEVIS JALALUDDIN RUMI <span className="mx-6 sm:mx-10 text-sky-200/70 font-light">—</span>
           </span>
         </div>
-
-        {/* Role Pill with Magnetic Spring and Dynamic Sparkle */}
-        <div
-          ref={rolePillRef}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/85 hover:bg-white text-slate-900 border border-white/70 shadow-[0_4px_20px_rgba(29,78,216,0.15)] backdrop-blur-md text-xs sm:text-sm font-mono tracking-wide transition-colors duration-300 cursor-default will-change-transform"
-        >
-          <Sparkles className="w-4 h-4 text-blue-600 animate-spin" style={{ animationDuration: '6s' }} />
-          <span className="font-semibold uppercase tracking-wider text-blue-900">Software Engineering Student</span>
-          {hudActive && (
-            <span className="text-[10px] font-mono text-emerald-600 font-bold ml-1 hidden lg:inline animate-pulse">
-              ● RADAR
-            </span>
-          )}
-        </div>
       </div>
 
       {/* 
-        1. Continuous Rolling Sideways Marquee (Dennis Snellenberg Signature)
-        Spans 100% of viewport edge-to-edge (w-screen) so text never cuts off before screen border.
-        Placed at z-10 behind the large portrait.
-      */}
-      <div className="absolute bottom-[20%] sm:bottom-[22%] md:bottom-[24%] left-0 w-full overflow-hidden select-none pointer-events-none z-10">
-        <div className="flex w-max animate-marquee whitespace-nowrap">
-          {/* Track 1 */}
-          <div className="flex items-center text-7xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_32px_rgba(29,78,216,0.35)] leading-none pr-12">
-            <span>Abu Devis Jalaluddin Rumi</span>
-            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-            <span>Abu Devis Jalaluddin Rumi</span>
-            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-          </div>
-          {/* Track 2 for seamless infinite loop */}
-          <div className="flex items-center text-7xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-sans font-black tracking-tighter text-white drop-shadow-[0_12px_32px_rgba(29,78,216,0.35)] leading-none pr-12">
-            <span>Abu Devis Jalaluddin Rumi</span>
-            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-            <span>Abu Devis Jalaluddin Rumi</span>
-            <span className="mx-6 sm:mx-10 text-sky-100 font-light opacity-90">—</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 
-        2. Commanding Prominent Polished Cutout Portrait
-        Centered via flexbox wrapper with subtle optical offset (-translate-x-3.5) to align head/torso axis dead-center.
-        Solid 100% opaque without blur or mask fade on thighs/legs.
+        4. Sandwich Layer 2 (Front): Commanding Cutout Portrait with Breathing Room
+        Scaled to 80-84vh to provide a generous, comfortable gap below the floating navbar.
       */}
       <div className="absolute bottom-0 inset-x-0 flex justify-center pointer-events-none z-20">
         <div
           ref={portraitRef}
-          className="relative -translate-x-3 sm:-translate-x-4 h-[72vh] sm:h-[76vh] md:h-[80vh] lg:h-[84vh] max-h-[880px] flex items-end justify-center pointer-events-none transition-transform will-change-transform"
+          className="relative -translate-x-2 sm:-translate-x-3 h-[76vh] sm:h-[80vh] md:h-[82vh] lg:h-[84vh] max-h-[860px] flex items-end justify-center pointer-events-none will-change-transform"
+          style={{ transform: 'translate3d(0, 0, 0)' }}
         >
           <picture className="h-full w-auto max-w-full block">
             <source srcSet="/assets/devis_portrait_polished.webp" type="image/webp" />
             <img
               src="/assets/devis_portrait_polished.png"
               alt="Abu Devis Jalaluddin Rumi"
-              className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_28px_50px_rgba(15,23,42,0.35)]"
+              className="h-full w-auto max-w-full object-contain object-bottom select-none filter contrast-[1.03] brightness-[1.01] drop-shadow-[0_32px_60px_rgba(15,23,42,0.4)]"
               loading="eager"
             />
           </picture>
         </div>
       </div>
 
-      {/* Flexible Spacer */}
-      <div className="flex-1 pointer-events-none" />
-
       {/* 
-        Bottom Section:
-        - Left: Clean Editorial TRPL Student Bio with 3D tilt
-        - Right: Explore Profile CTA Button with magnetic bounce
-        Clean floating layout without hard horizontal cutoff line.
+        5. Clean Minimalist Bottom Horizon (Ref: Drama Owns)
       */}
-      <div className="w-full z-40 pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 [perspective:1000px]">
-        {/* Editorial Bio Text Container */}
-        <div ref={bioRef} className="relative max-w-xl will-change-transform transition-transform">
-          <p className="text-xs sm:text-sm md:text-base text-white/95 font-medium leading-relaxed select-none drop-shadow-[0_2px_8px_rgba(29,78,216,0.4)]">
-            {bioText}
-          </p>
-          {hudActive && (
-            <div className="mt-1 flex items-center space-x-3 text-[10px] font-mono text-sky-200/80">
-              <span className="flex items-center space-x-1">
-                <Compass className="w-3 h-3 text-sky-300" />
-                <span>COORDS: X={coords.x} Y={coords.y}</span>
-              </span>
-              <span>·</span>
-              <span>VELOCITY: {coords.speed} px/s</span>
-            </div>
-          )}
+      <div className="w-full z-30 flex items-center justify-between text-white/90 text-xs sm:text-sm font-mono tracking-wider pointer-events-none">
+        {/* Left: Clean Tagline */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
+          <span>Software Engineering · IDN Polytechnic</span>
         </div>
 
-        {/* CTA Button with Magnetic Spring Absorption */}
-        <div className="flex items-center gap-3">
-          <a
-            ref={ctaBtnRef}
-            href="#work"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white hover:bg-white/95 text-blue-900 text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_20px_rgba(29,78,216,0.25)] hover:shadow-[0_8px_30px_rgba(29,78,216,0.45)] group pointer-events-auto will-change-transform transition-colors"
-          >
-            <span>Explore Engineering Profile</span>
-            <ArrowUpRight className="w-4 h-4 ml-2 text-blue-600 group-hover:translate-x-1.5 group-hover:-translate-y-1.5 transition-transform duration-300" />
-          </a>
+        {/* Right: Clean Origin / Telemetry */}
+        <div className="hidden sm:flex items-center gap-2 text-white/80 pointer-events-auto">
+          <span>Bogor, Indonesia</span>
+          <span className="text-white/40">//</span>
+          <span className="text-sky-200">06°35′S 106°47′E</span>
         </div>
       </div>
     </section>

@@ -24,6 +24,8 @@ export default {
         'crimson-subtle': 'rgba(230, 57, 70, 0.15)',
       },
       fontFamily: {
+        bebas: ['"Bebas Neue"', 'sans-serif'],
+        anton: ['Anton', 'sans-serif'],
         serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         italiana: ['Italiana', 'serif'],
         display: ['Syne', 'sans-serif'],
