@@ -8,10 +8,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* ═══════════════════════════════════════════════════════════════════════════
    03 · THE NEXUS (Dual-Dimension Horizontal Scroll Track — Ala MadeByKota)
+   - Palette: Option A — Warm Paper (#F5F4F0) with Charcoal (#141414)
    - Outer container: h-[320vh] for smooth scroll travel.
    - Inner container: sticky top-0 h-screen overflow-hidden.
    - Layer 1: Background giant hollow typography marquee (reverse parallax).
-   - Layer 2: 3 Staggered Living Characters (Hiking, Spidey Thobe, Software Eng).
+   - Layer 2: 3 Staggered Living Characters (Merbabu Hiker, Spidey Thobe, Software Eng).
    - Layer 3: Monumental Spencerian "Receipts" typography & verified badges.
    - Pinned interaction: smooth hover slow-down & character spotlight captions.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -37,10 +38,10 @@ const CHARACTERS: CharacterData[] = [
     title: 'The Adventurer',
     quote: 'Daya tahan fisik & ketenangan mental sebelum baris kode pertama.',
     caption: 'Tempaan ekspedisi Gunung Merbabu, alam terbuka Sentul, dan ketahanan navigasi.',
-    imgUrl: '/assets/person/awalan/devis_portrait_4k_transparent.png',
+    imgUrl: '/assets/person/awalan/devis_hiker_merbabu_cutout.png',
     imgAlt: 'Abu Devis the Adventurer',
-    accent: '#38bdf8', // sky
-    tagBg: 'rgba(56, 189, 248, 0.12)',
+    accent: '#0f766e', // deep teal
+    tagBg: 'rgba(15, 118, 110, 0.08)',
     icon: Compass,
     staggerOffset: 'translate-y-2',
   },
@@ -52,8 +53,8 @@ const CHARACTERS: CharacterData[] = [
     caption: 'Identitas heroik berakar nilai adab, akhlak mulia, dan tanggung jawab moral seorang muslim.',
     imgUrl: '/assets/person/awalan/Spider-Man in a Regal Thobe.png',
     imgAlt: 'Spider-Man in a Regal Thobe',
-    accent: '#f43f5e', // rose/crimson
-    tagBg: 'rgba(244, 63, 94, 0.14)',
+    accent: '#be123c', // deep crimson rose
+    tagBg: 'rgba(190, 18, 60, 0.08)',
     icon: ShieldCheck,
     staggerOffset: '-translate-y-4',
   },
@@ -65,8 +66,8 @@ const CHARACTERS: CharacterData[] = [
     caption: 'Mahasiswa Rekayasa Perangkat Lunak IDN Polytechnic. Penempaan full-stack, Rust, dan sistem AI.',
     imgUrl: '/assets/devis_portrait_polished.png',
     imgAlt: 'Devis the Software Engineer',
-    accent: '#a78bfa', // purple/iris
-    tagBg: 'rgba(167, 139, 250, 0.14)',
+    accent: '#6d28d9', // deep iris
+    tagBg: 'rgba(109, 40, 217, 0.08)',
     icon: Terminal,
     staggerOffset: 'translate-y-3',
   },
@@ -126,53 +127,47 @@ export const NexusSection: React.FC = () => {
     <section
       id="nexus"
       ref={triggerRef}
-      className="relative z-20 w-full h-[320vh] bg-[#0A0B0E] text-slate-100 select-none"
+      className="relative z-20 w-full h-[320vh] bg-[#F5F4F0] text-[#141414] select-none"
     >
       {/* 
         ── INNER PINNED VIEWPORT (STAY LOCKED DURING 320vh SCROLL) ──
       */}
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between py-5 sm:py-7">
         
-        {/* ── 1. AMBIENT BACKGROUND GLOW & GRAIN ── */}
+        {/* ── 1. AMBIENT WARM PAPER GLOW & TACTILE GRAIN ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden -z-20">
           <div
-            className="absolute -top-[10%] left-[10%] w-[680px] h-[680px] rounded-full blur-[140px] opacity-40 animate-aurora-1"
+            className="absolute -top-[10%] left-[10%] w-[680px] h-[680px] rounded-full blur-[140px] opacity-40"
             style={{
-              background: 'radial-gradient(circle, #1e3a8a 0%, rgba(30, 58, 138, 0.25) 50%, transparent 75%)',
+              background: 'radial-gradient(circle, rgba(226, 224, 216, 0.7) 0%, rgba(245, 244, 240, 0.2) 60%, transparent 75%)',
             }}
           />
           <div
-            className="absolute -bottom-[15%] right-[15%] w-[740px] h-[620px] rounded-full blur-[150px] opacity-30 animate-aurora-2"
+            className="absolute -bottom-[15%] right-[15%] w-[740px] h-[620px] rounded-full blur-[150px] opacity-35"
             style={{
-              background: 'radial-gradient(circle, #c2410c 0%, rgba(194, 65, 12, 0.2) 45%, transparent 75%)',
-            }}
-          />
-          <div
-            className="absolute top-[40%] left-[45%] w-[500px] h-[500px] rounded-full blur-[130px] opacity-20 animate-aurora-3"
-            style={{
-              background: 'radial-gradient(circle, #0284c7 0%, rgba(2, 132, 199, 0.15) 55%, transparent 75%)',
+              background: 'radial-gradient(circle, rgba(235, 230, 220, 0.8) 0%, rgba(245, 244, 240, 0.3) 50%, transparent 75%)',
             }}
           />
         </div>
 
-        {/* Fine Noise Grain Overlay */}
+        {/* Fine Noise Grain Overlay for Tactile Lookbook Paper Tooth */}
         <div
-          className="absolute inset-0 pointer-events-none -z-10 opacity-[0.035] mix-blend-overlay"
+          className="absolute inset-0 pointer-events-none -z-10 opacity-[0.03] mix-blend-multiply"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'repeat',
           }}
         />
 
-        {/* ── 2. BACKGROUND HOLLOW MARQUEE LAYER (Ala KOTA Parallax) ── */}
+        {/* ── 2. BACKGROUND HOLLOW MARQUEE LAYER (Ala KOTA Parallax — Subtle Watermark) ── */}
         <div
           ref={bgMarqueeRef}
           className="absolute top-1/2 -translate-y-1/2 left-0 w-max pointer-events-none -z-10 whitespace-nowrap will-change-transform flex items-center select-none"
         >
           <span
-            className="font-display font-black text-[18vw] uppercase tracking-tighter opacity-[0.06] text-transparent leading-none"
+            className="font-display font-black text-[18vw] uppercase tracking-tighter opacity-[0.05] text-transparent leading-none"
             style={{
-              WebkitTextStroke: '2px rgba(255, 255, 255, 0.85)',
+              WebkitTextStroke: '1.5px rgba(20, 20, 20, 0.85)',
             }}
           >
             THE FORGE — RECEIPTS — THE PERSON — PROOF — THE FORGE — RECEIPTS —
@@ -183,25 +178,25 @@ export const NexusSection: React.FC = () => {
         <div className="relative z-30 w-full flex items-start justify-between px-8 sm:px-14 shrink-0">
           <div className="flex flex-col">
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.24em] text-sky-400 uppercase">
+              <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.24em] text-stone-700 uppercase">
                 03 // THE NEXUS
               </span>
-              <span className="w-5 h-[1.5px] bg-slate-700 rounded-full inline-block" />
-              <span className="font-mono text-[10px] sm:text-[10.5px] text-slate-400 font-semibold tracking-wider uppercase">
+              <span className="w-5 h-[1.5px] bg-[#E2E0D8] rounded-full inline-block" />
+              <span className="font-mono text-[10px] sm:text-[10.5px] text-stone-500 font-semibold tracking-wider uppercase">
                 Horizontal Traverse
               </span>
             </div>
 
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight mt-1">
-              The Forge <span className="text-sky-400/80">&</span> Receipts
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[#141414] tracking-tight mt-1">
+              The Forge <span className="font-serif italic font-normal text-stone-500">&</span> Receipts
             </h2>
 
-            <div className="flex items-center gap-3 mt-1 font-mono text-[9.5px] text-slate-400 tracking-wider">
-              <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+            <div className="flex items-center gap-3 mt-1 font-mono text-[9.5px] text-stone-500 tracking-wider">
+              <span className="flex items-center gap-1.5 text-stone-800 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shadow-[0_0_6px_rgba(5,150,105,0.4)] animate-pulse" />
                 ACTIVE TRAVERSE
               </span>
-              <span className="text-slate-600">//</span>
+              <span className="text-stone-300">//</span>
               <span>06°35′S 106°47′E (BOGOR)</span>
             </div>
           </div>
@@ -220,31 +215,31 @@ export const NexusSection: React.FC = () => {
             className="flex items-center flex-nowrap gap-16 sm:gap-24 pl-8 sm:pl-16 pr-24 will-change-transform h-full"
           >
             
-            {/* ── STATION 0: INTRO RUNWAY ARCHITECTURE ── */}
+            {/* ── STATION 0: INTRO RUNWAY ARCHITECTURE (Clean Editorial Without Rainbow Gradients) ── */}
             <div className="w-[320px] sm:w-[380px] shrink-0 flex flex-col justify-center text-left py-4">
-              <span className="font-mono text-[9px] font-bold text-sky-400 tracking-[0.2em] uppercase mb-1.5">
+              <span className="font-mono text-[9px] font-bold text-stone-500 tracking-[0.25em] uppercase mb-2">
                 NARRATIVE INTERSECTION
               </span>
 
-              <h3 className="font-display font-black text-4xl sm:text-5xl text-white tracking-tight uppercase leading-[0.95]">
+              <h3 className="font-display font-black text-4xl sm:text-5xl text-[#141414] tracking-tight uppercase leading-[0.95]">
                 Three
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-300 to-amber-300">
+                <span className="font-serif italic font-normal text-stone-600">
                   Dimensions
                 </span>
               </h3>
 
-              <p className="font-sans text-xs sm:text-sm text-slate-300 leading-relaxed mt-4">
+              <p className="font-sans text-xs sm:text-sm text-stone-600 leading-relaxed mt-4">
                 Gulir ke bawah untuk melintasi tiga sisi penempaan: ketahanan fisik pendaki, integritas heroik muslim, dan rekayasa sistem di IDN Polytechnic.
               </p>
 
-              <div className="mt-6 flex items-center gap-2 text-slate-400 font-mono text-[10px]">
-                <span className="w-6 h-[1px] bg-slate-600" />
+              <div className="mt-6 flex items-center gap-2 text-stone-400 font-mono text-[10px] tracking-wider">
+                <span className="w-6 h-[1px] bg-stone-300" />
                 <span>SCROLL DOWN TO ADVANCE →</span>
               </div>
             </div>
 
-            {/* ── STATION 1, 2, 3: THREE LIVING CHARACTERS (STAGGERED DEPTH) ── */}
+            {/* ── STATION 1, 2, 3: THREE LIVING CHARACTERS (LOOKBOOK EDITORIAL SPREAD) ── */}
             {CHARACTERS.map((char, idx) => {
               const Icon = char.icon;
               const isHovered = hoveredChar === char.id;
@@ -260,9 +255,9 @@ export const NexusSection: React.FC = () => {
                     height: 'clamp(460px, 66vh, 600px)',
                   }}
                 >
-                  {/* Floating Caption HUD (Reveals on Hover / Soft Breathing on Idle) */}
+                  {/* Floating Caption HUD (Clean Frosted Paper on Hover) */}
                   <div
-                    className={`absolute -top-12 inset-x-0 mx-auto w-full max-w-[280px] rounded-xl border border-white/10 bg-slate-950/85 backdrop-blur-md p-3 text-left shadow-xl transition-all duration-300 pointer-events-none z-30 ${
+                    className={`absolute -top-12 inset-x-0 mx-auto w-full max-w-[280px] rounded-xl border border-[#E2E0D8] bg-white/95 backdrop-blur-md p-3 text-left shadow-[0_12px_32px_rgba(0,0,0,0.08)] transition-all duration-300 pointer-events-none z-30 ${
                       isHovered ? 'opacity-100 -translate-y-2' : 'opacity-0 translate-y-2'
                     }`}
                   >
@@ -273,45 +268,45 @@ export const NexusSection: React.FC = () => {
                       >
                         {char.badge}
                       </span>
-                      <span className="font-mono text-[9px] text-slate-400">0{idx + 1}/03</span>
+                      <span className="font-mono text-[9px] text-stone-400">0{idx + 1}/03</span>
                     </div>
-                    <p className="font-sans text-[11px] text-slate-200 font-medium leading-snug">
+                    <p className="font-sans text-[11px] text-stone-800 font-medium leading-snug">
                       {char.caption}
                     </p>
                   </div>
 
-                  {/* Soft Ground Ambient Contact Shadow */}
+                  {/* Soft Ground Contact Shadow (Natural Lookbook Cast) */}
                   <div
-                    className="absolute bottom-2 inset-x-[15%] h-6 rounded-full pointer-events-none -z-10 transition-transform duration-500 group-hover/char:scale-110"
+                    className="absolute bottom-2 inset-x-[15%] h-5 rounded-full pointer-events-none -z-10 transition-transform duration-500 group-hover/char:scale-110"
                     style={{
-                      background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.95) 0%, rgba(10,11,14,0.6) 50%, transparent 75%)',
-                      filter: 'blur(8px)',
+                      background: 'radial-gradient(ellipse at center, rgba(20,20,20,0.2) 0%, rgba(20,20,20,0.05) 45%, transparent 70%)',
+                      filter: 'blur(6px)',
                     }}
                   />
 
-                  {/* Character Image Silhouette with Subtle Bottom Fade */}
+                  {/* Character Image Silhouette with Subtle Bottom Ground Fade */}
                   <div
                     className="relative w-full h-[85%] flex items-end justify-center transition-transform duration-500 ease-out group-hover/char:scale-[1.03]"
                     style={{
-                      maskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.85) 16px, black 36px)',
-                      WebkitMaskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.85) 16px, black 36px)',
+                      maskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.85) 14px, black 32px)',
+                      WebkitMaskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.85) 14px, black 32px)',
                     }}
                   >
                     <img
                       src={char.imgUrl}
                       alt={char.imgAlt}
-                      className="h-full w-auto max-w-full object-contain object-bottom filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] pointer-events-none"
+                      className="h-full w-auto max-w-full object-contain object-bottom filter drop-shadow-[0_16px_25px_rgba(0,0,0,0.12)] pointer-events-none"
                       loading="eager"
                     />
                   </div>
 
                   {/* Character Monograph Plate Underneath */}
                   <div className="w-full text-center mt-3 shrink-0">
-                    <div className="inline-flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-wider uppercase text-slate-400">
+                    <div className="inline-flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-wider uppercase text-stone-700">
                       <Icon className="w-3 h-3" style={{ color: char.accent }} />
                       <span>{char.title}</span>
                     </div>
-                    <p className="font-sans text-[11px] text-slate-300 font-medium line-clamp-1 mt-0.5 px-2">
+                    <p className="font-sans text-[11px] text-stone-600 font-medium line-clamp-1 mt-0.5 px-2">
                       "{char.quote}"
                     </p>
                   </div>
@@ -320,27 +315,23 @@ export const NexusSection: React.FC = () => {
             })}
 
             {/* ── STATION 4: MONUMENTAL "RECEIPTS" TYPOGRAPHY SCULPTURE ── */}
-            <div className="w-[420px] sm:w-[500px] shrink-0 flex flex-col justify-center items-start text-left pl-6 border-l border-white/[0.08] py-4 select-none">
+            <div className="w-[420px] sm:w-[500px] shrink-0 flex flex-col justify-center items-start text-left pl-6 border-l border-[#E2E0D8] py-4 select-none">
               
               <div className="flex items-center gap-2 mb-1.5">
-                <Award className="w-3.5 h-3.5 text-amber-400" />
-                <span className="font-mono text-[10px] font-bold text-amber-300 tracking-[0.22em] uppercase">
+                <Award className="w-3.5 h-3.5 text-stone-700" />
+                <span className="font-mono text-[10px] font-bold text-stone-600 tracking-[0.22em] uppercase">
                   DIMENSION 02 // PROOF
                 </span>
               </div>
 
-              {/* Pure Spencerian Serif Italic (Clean Luxury Without Swoosh) */}
+              {/* Pure Spencerian Serif Italic (Charcoal Luxury Monograph) */}
               <div className="relative my-1 group/receipts cursor-pointer">
-                <div className="absolute -inset-4 bg-amber-500/15 blur-2xl opacity-60 group-hover/receipts:opacity-100 transition-opacity duration-500 pointer-events-none -z-10" />
+                <div className="absolute -inset-4 bg-stone-200/50 blur-2xl opacity-60 group-hover/receipts:opacity-100 transition-opacity duration-500 pointer-events-none -z-10" />
 
                 <h1
-                  className="font-serif italic font-extrabold text-7xl sm:text-8xl md:text-9xl tracking-tight transition-transform duration-500 group-hover/receipts:scale-[1.02]"
+                  className="font-serif italic font-extrabold text-7xl sm:text-8xl md:text-9xl tracking-tight transition-transform duration-500 group-hover/receipts:scale-[1.02] text-[#141414]"
                   style={{
                     fontFamily: "'Playfair Display', Georgia, serif",
-                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FED7AA 35%, #FDBA74 70%, #FB923C 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0 10px 30px rgba(234, 88, 12, 0.35))',
                   }}
                 >
                   Receipts
@@ -349,41 +340,41 @@ export const NexusSection: React.FC = () => {
 
               {/* Verified Metadata Badges */}
               <div className="mt-3 flex flex-wrap gap-2">
-                <span className="font-mono text-[9px] font-bold text-amber-300 bg-amber-950/50 border border-amber-500/30 px-3 py-1 rounded-full">
+                <span className="font-mono text-[9px] font-bold text-stone-800 bg-white border border-[#E2E0D8] px-3 py-1 rounded-full shadow-xs">
                   JUARA 1 CC NAHWU
                 </span>
-                <span className="font-mono text-[9px] font-bold text-sky-300 bg-sky-950/50 border border-sky-500/30 px-3 py-1 rounded-full">
+                <span className="font-mono text-[9px] font-bold text-stone-800 bg-white border border-[#E2E0D8] px-3 py-1 rounded-full shadow-xs">
                   HAFIDZ QURAN TERBANYAK
                 </span>
-                <span className="font-mono text-[9px] font-bold text-slate-300 bg-slate-900/50 border border-slate-700/40 px-3 py-1 rounded-full">
+                <span className="font-mono text-[9px] font-bold text-stone-800 bg-white border border-[#E2E0D8] px-3 py-1 rounded-full shadow-xs">
                   SEKBEN OSIS & CYBERSEC
                 </span>
               </div>
 
-              <p className="font-sans text-xs sm:text-sm text-slate-300 leading-relaxed mt-4 max-w-md">
+              <p className="font-sans text-xs sm:text-sm text-stone-600 leading-relaxed mt-4 max-w-md">
                 Bukan sekadar klaim. Setiap sertifikat, pengakuan lomba, dan piagam pencapaian disajikan dalam galeri monograf interaktif yang teruji dan terkurasi.
               </p>
 
               {/* Minimalist Action Link */}
-              <div className="mt-5 pt-3 border-t border-white/10 flex items-center gap-3 w-full">
-                <span className="font-mono text-[9px] text-slate-500">// ARISTIDE MONOGRAPH</span>
+              <div className="mt-5 pt-3 border-t border-[#E2E0D8] flex items-center gap-3 w-full">
+                <span className="font-mono text-[9px] text-stone-400">// ARISTIDE MONOGRAPH</span>
                 <a
                   href="#receipts"
-                  className="group flex items-center gap-2 text-xs sm:text-sm font-display font-bold text-amber-300 hover:text-white transition-colors cursor-pointer"
+                  className="group flex items-center gap-2 text-xs sm:text-sm font-display font-bold text-[#141414] hover:text-stone-600 transition-colors cursor-pointer"
                 >
                   <RollingText text="INSPECT RECEIPTS" staggerMs={24} />
-                  <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 text-amber-400" />
+                  <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 text-stone-700" />
                 </a>
               </div>
             </div>
 
             {/* ── STATION 5: DUAL GATEWAY FORK TERMINAL ── */}
-            <div className="w-[340px] shrink-0 flex flex-col justify-center items-start text-left pl-6 border-l border-white/[0.08] py-4">
-              <span className="font-mono text-[9px] font-bold text-sky-400 tracking-[0.22em] uppercase mb-2">
+            <div className="w-[340px] shrink-0 flex flex-col justify-center items-start text-left pl-6 border-l border-[#E2E0D8] py-4">
+              <span className="font-mono text-[9px] font-bold text-stone-500 tracking-[0.22em] uppercase mb-2">
                 TERMINAL // DESTINATIONS
               </span>
 
-              <h4 className="font-display font-extrabold text-2xl text-white tracking-tight uppercase">
+              <h4 className="font-display font-extrabold text-2xl text-[#141414] tracking-tight uppercase">
                 Choose Your
                 <br />
                 Dimension
@@ -392,32 +383,32 @@ export const NexusSection: React.FC = () => {
               <div className="mt-5 space-y-3 w-full">
                 <a
                   href="#character"
-                  className="group w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 transition-all cursor-pointer"
+                  className="group w-full flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-stone-50 border border-[#E2E0D8] shadow-xs hover:shadow-sm transition-all cursor-pointer"
                 >
                   <div className="flex flex-col">
-                    <span className="font-mono text-[8px] text-sky-400 font-bold uppercase tracking-wider">
+                    <span className="font-mono text-[8px] text-stone-500 font-bold uppercase tracking-wider">
                       PAGE 01
                     </span>
-                    <span className="font-display font-bold text-sm text-white mt-0.5">
+                    <span className="font-display font-bold text-sm text-[#141414] mt-0.5">
                       The Person & Narrative
                     </span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-sky-400 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <ArrowUpRight className="w-4 h-4 text-stone-700 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </a>
 
                 <a
                   href="#receipts"
-                  className="group w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 transition-all cursor-pointer"
+                  className="group w-full flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-stone-50 border border-[#E2E0D8] shadow-xs hover:shadow-sm transition-all cursor-pointer"
                 >
                   <div className="flex flex-col">
-                    <span className="font-mono text-[8px] text-amber-400 font-bold uppercase tracking-wider">
+                    <span className="font-mono text-[8px] text-stone-500 font-bold uppercase tracking-wider">
                       PAGE 02
                     </span>
-                    <span className="font-display font-bold text-sm text-white mt-0.5">
+                    <span className="font-display font-bold text-sm text-[#141414] mt-0.5">
                       The Proof & Receipts
                     </span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-amber-400 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <ArrowUpRight className="w-4 h-4 text-stone-700 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </a>
               </div>
             </div>
@@ -426,15 +417,15 @@ export const NexusSection: React.FC = () => {
         </div>
 
         {/* ── 5. BOTTOM EDITORIAL STATUS BAR ── */}
-        <div className="relative z-30 w-full flex items-center justify-between px-8 sm:px-14 shrink-0 text-slate-400 font-mono text-[10px] tracking-wider border-t border-white/5 pt-3">
+        <div className="relative z-30 w-full flex items-center justify-between px-8 sm:px-14 shrink-0 text-stone-500 font-mono text-[10px] tracking-wider border-t border-[#E2E0D8] pt-3">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-stone-700 animate-pulse" />
             <span>DEVIS® HORIZONTAL TRAVERSE APPARATUS</span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-slate-400">
+          <div className="hidden sm:flex items-center gap-4 text-stone-500">
             <span>HOLD SCROLL TO PAN TRACK</span>
-            <span className="text-slate-600">//</span>
-            <span className="text-sky-300 font-bold">HOVER ANY FIGURE FOR INTEL</span>
+            <span className="text-stone-300">//</span>
+            <span className="text-stone-800 font-bold">HOVER ANY FIGURE FOR INTEL</span>
           </div>
         </div>
 

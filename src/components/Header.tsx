@@ -48,15 +48,14 @@ export const Header: React.FC = () => {
   };
 
   const isShifted = navTheme === 'work' || navTheme === 'nexus';
-  const isLight = navTheme === 'work';
+  const isLight = navTheme === 'work' || navTheme === 'nexus';
 
   return (
     <header className="fixed top-3.5 sm:top-4 inset-x-0 z-50 pointer-events-none px-4 sm:px-8">
       {/* 
         ── DYNAMIC CONTEXTUAL MORPHING NAVBAR ──
         Section 1 (Hero): Centered at 50%, Smoked Navy Glass
-        Section 2 (Work): Right, Light Editorial Theme
-        Section 3 (Nexus): Right, Dark Aurora Smoked Glass
+        Section 2 (Work) & Section 3 (Nexus): Right-aligned, Clean Warm Editorial Light Theme
       */}
       <nav
         className={`pointer-events-auto absolute flex items-center gap-1 sm:gap-2 px-3 py-1.5 rounded-full will-change-transform ${
